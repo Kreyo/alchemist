@@ -49,6 +49,12 @@ router.post("/updateData", (req, res) => {
   });
 });
 
+router.get("/getStarters", (req, res) => {
+  Data.find({ starter: true }, (err, result) => {
+    return res.json({ success: true, result: result });
+  });
+});
+
 router.post("/combineElements", (req, res) => {
   const { first, second } = req.body;
   console.log(req.body);
