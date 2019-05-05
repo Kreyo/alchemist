@@ -19,7 +19,6 @@ export class Tile extends Component {
   render() {
     return <div
       ref="draggable"
-      id={this.props.value}
       className="tile"
       style={{
         backgroundColor: this.props.color

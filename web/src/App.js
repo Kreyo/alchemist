@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import Tile from './components/Tile';
+import TilesList from "./components/TilesList";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       tiles: [],
+      availableTiles: [],
       dragged: null
     };
     this.onDragStart = this.onDragStart.bind(this);
@@ -19,17 +21,23 @@ class App extends Component {
     axios.get("/api/getUsers")
       .then(result => console.log(result));
     axios.get("/api/getStarters")
-      .then(result => this.setState({ tiles: result.data.result }));
+      .then(result => this.setState({ tiles: result.data.result, availableTiles: result.data.result }));
   }
 
   combineElements(first, second) {
     axios.post("/api/combineElements", { first, second })
       .then(result => {
         if (result.data.result.length) {
-          const newTiles = this.state.tiles;
-          _.remove(newTiles, element => (element.id === first || element.id === second));
-          newTiles.push(result.data.result[0]);
-          this.setState({ tiles: newTiles });
+          const firstOccurence = _.findIndex(this.state.tiles, element => element.id === first);
+          const secondOccurence = _.findIndex(this.state.tiles, element => element.id === second);
+          let newTiles = [...this.state.tiles];
+          newTiles.splice(firstOccurence, 1);
+          newTiles.splice(secondOccurence, 1);
+          this.setState(
+            {
+              tiles: [...newTiles, result.data.result[0]],
+              availableTiles: [...this.state.availableTiles, result.data.result[0]],
+            });
         } else {
           alert('lol no');
         }
@@ -50,19 +58,31 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-        { !this.state.tiles.length && <p>Loading...</p> }
-        {this.state.tiles.map((tile, index) =>
-          <Tile
-            key={`${tile.id}${index}`}
-            onDragStart={this.onDragStart}
-            onDragOver={this.onDragOver}
-            onDragEnd={this.onDragEnd}
-            value={tile.id}
-            name={tile.name}
-            color={tile.color}
+      <div className="container">
+        <div className="available-tiles">
+          <h2>Available elements</h2>
+          <TilesList
+            tiles={this.state.availableTiles}
+            onClick={tile => this.setState({ tiles: [...this.state.tiles, tile] })}
           />
-        )}
+          <hr />
+        </div>
+        { !this.state.tiles.length && <p>Loading...</p> }
+        <div className="crafting">
+          <h2>Crafting!</h2>
+          {this.state.tiles.map((tile, index) =>
+            <Tile
+              key={`${tile.id}${index}-starters`}
+              onDragStart={this.onDragStart}
+              onDragOver={this.onDragOver}
+              onDragEnd={this.onDragEnd}
+              value={tile.id}
+              name={tile.name}
+              color={tile.color}
+              dataId={`${tile.id}-${index}`}
+            />
+          )}
+        </div>
       </div>
     );
   }
