@@ -2,15 +2,15 @@ const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
-const Data = require("./data");
-const Users = require("./users");
+const Data = require("./db/data");
+const Users = require("./db/users");
 
 const API_PORT = 3001;
 const app = express();
 const router = express.Router();
 
 // this is our MongoDB database
-const dbRoute = "mongodb://user:hello123@ds131784.mlab.com:31784/alchemy";
+const dbRoute = "mongodb://test:test123@ds131784.mlab.com:31784/alchemy";
 
 // connects our back end code with the database
 mongoose.connect(
@@ -44,13 +44,23 @@ router.get("/getUsers", (req, res) => {
 
   let user = new Users();
 
-  user.name = 'test';
+  user.username = 'test';
   user.id = 0;
   user.password = 'test';
   user.discoveredElements = [];
   user.save(err => {
     if (err) return res.json({ success: false, error: err });
     return res.json({ success: true });
+  });
+});
+
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  Users.find({ username: username, password: password }, (err, result) => {
+    if (err || !result.length) return res.status(401).json({ success: false, error: 'Something went wrong!' });
+    if (result.length) {
+      return res.json({ success: true, result: result });
+    }
   });
 });
 
