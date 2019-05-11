@@ -43,9 +43,11 @@ class App extends Component {
   setAvailableTiles(availableTiles) {
     this.setState({ availableTiles });
     const { user } = this.state;
-    user.discoveredElements = availableTiles;
-    axios.put('/api/update', user);
-    localStorage.setItem('alchemyUser', JSON.stringify(user));
+    if (user) {
+      user.discoveredElements = availableTiles;
+      axios.put('/api/update', user);
+      localStorage.setItem('alchemyUser', JSON.stringify(user));
+    }
   }
 
   render() {

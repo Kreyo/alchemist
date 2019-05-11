@@ -5,7 +5,8 @@ const DataSchema = new Schema(
   {
     id: Number,
     name: String,
-    parents: Array
+    parents: Array,
+    color: String
   },
   { timestamps: true }
 );

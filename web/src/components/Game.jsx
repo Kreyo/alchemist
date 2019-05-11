@@ -19,13 +19,17 @@ class Game extends Component {
     axios.post('/api/combineElements', { first, second })
       .then(result => {
         if (result.data.result.length) {
-          const firstOccurence = _.findIndex(this.props.tiles, element => element.id === first);
-          const secondOccurence = _.findIndex(this.props.tiles, element => element.id === second);
           let newTiles = [...this.props.tiles];
+          const firstOccurence = _.findIndex(newTiles, element => element.id === first);
           newTiles.splice(firstOccurence, 1);
+          const secondOccurence = _.findIndex(newTiles, element => element.id === second);
           newTiles.splice(secondOccurence, 1);
           this.props.setTiles([...newTiles, result.data.result[0]]);
-          this.props.setAvailableTiles([...this.props.availableTiles, result.data.result[0]]);
+          const newAvailableTiles = [...this.props.availableTiles, result.data.result[0]];
+          if (!_.find(this.props.availableTiles, result.data.result[0])) {
+            this.props.setAvailableTiles(newAvailableTiles);
+          }
+
         } else {
           alert('Try something else!');
         }
