@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-export class Login extends Component {
+export class Register extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       username: '',
       password: '',
+      error: ''
     };
   }
 
@@ -19,14 +20,16 @@ export class Login extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    axios.post('/api/login', {
+    axios.post('/api/register', {
       username: this.state.username,
-      password: this.state.password
+      password: this.state.password,
+      discoveredElements: this.props.availableElements,
     }).then(response => {
       if (response.data.error) {
         this.setState({ error: response.data.error });
       } else {
-        this.props.setUser(response.data.result[0]);
+        console.log(response);
+        this.props.setUser(response.data.result);
       }
     })
       .catch(e => console.log(e));
@@ -34,9 +37,9 @@ export class Login extends Component {
 
   render() {
     return (
-      <div className="login">
+      <div className="Register">
+        <h4>Register to save your progress</h4>
         <span className="error">{this.state.error}</span>
-        <h4>Login to restore progress</h4>
         <form onSubmit={this.handleSubmit}>
           <div>
             <label htmlFor="username">Username</label>
@@ -67,4 +70,4 @@ export class Login extends Component {
   }
 }
 
-export default Login;
+export default Register;

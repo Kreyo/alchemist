@@ -40,27 +40,41 @@ router.get("/getData", (req, res) => {
   });
 });
 
-router.get("/getUsers", (req, res) => {
-
+router.post("/register", (req, res) => {
   let user = new Users();
 
-  user.username = 'test';
-  user.id = 0;
-  user.password = 'test';
-  user.discoveredElements = [];
-  user.save(err => {
-    if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true });
+  const { username, password, discoveredElements } = req.body;
+  user.username = username;
+  user.password = password;
+  user.discoveredElements = discoveredElements;
+  Users.find({ username: username }, (err, result) => {
+    if (result.length) {
+      return res.json({ success: false, error: 'User already exists!' });
+    }
+
+    user.save(err => {
+      if (err) return res.json({ success: false, error: err });
+      return res.json({ success: true, result: user });
+    });
   });
+
 });
 
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
   Users.find({ username: username, password: password }, (err, result) => {
-    if (err || !result.length) return res.status(401).json({ success: false, error: 'Something went wrong!' });
+    if (err || !result.length) return res.json({ success: false, error: 'Incorrect credentials!' });
     if (result.length) {
       return res.json({ success: true, result: result });
     }
+  });
+});
+
+router.put('/update', (req, res) => {
+  const { username, discoveredElements } = req.body;
+  Users.updateOne({ username: username }, { $set: { discoveredElements } }, (err) => {
+    if (err) return res.json({ success: false, error: err });
+    return res.json({ success: true });
   });
 });
 
@@ -78,7 +92,6 @@ router.post("/combineElements", (req, res) => {
     return res.json({ success: true, result: result });
   });
 });
-
 
 // append /api for our http requests
 app.use("/api", router);
