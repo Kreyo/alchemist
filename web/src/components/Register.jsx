@@ -37,7 +37,7 @@ export class Register extends Component {
 
   render() {
     return (
-      <div className="Register">
+      <div className="Register" style={{ float: 'right' }}>
         <h4>Register to save your progress</h4>
         <span className="error">{this.state.error}</span>
         <form onSubmit={this.handleSubmit}>

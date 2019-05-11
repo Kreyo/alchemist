@@ -33,7 +33,10 @@ class App extends Component {
   }
 
   setUser(user) {
-    this.setState({ user });
+    this.setState({
+      user: user,
+      availableTiles: user.discoveredElements,
+    });
     localStorage.setItem('alchemyUser', JSON.stringify(user));
   }
 
@@ -50,6 +53,7 @@ class App extends Component {
       <div className="container">
         { this.state.user ? `Logged in as ${this.state.user.username}` : <Login setUser={this.setUser} />}
         { !this.state.user && <Register setUser={this.setUser} availableElements={this.state.availableTiles} />}
+        <div style={{ clear: 'both' }}/>
         <Game
           tiles={this.state.tiles}
           availableTiles={this.state.availableTiles}

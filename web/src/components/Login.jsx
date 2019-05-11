@@ -34,7 +34,7 @@ export class Login extends Component {
 
   render() {
     return (
-      <div className="login">
+      <div className="login" style={{ float: 'left' }}>
         <span className="error">{this.state.error}</span>
         <h4>Login to restore progress</h4>
         <form onSubmit={this.handleSubmit}>
