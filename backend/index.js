@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const Data = require("./db/data");
 const Users = require("./db/users");
+const Suggestions = require("./db/suggestions");
 
 const API_PORT = 3001;
 const app = express();
@@ -30,15 +31,6 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
-
-// this is our get method
-// this method fetches all available data in our database
-router.get("/getData", (req, res) => {
-  Data.find((err, data) => {
-    if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true, data: data });
-  });
-});
 
 router.post("/register", (req, res) => {
   let user = new Users();
@@ -86,10 +78,45 @@ router.get("/getStarters", (req, res) => {
 
 router.post("/combineElements", (req, res) => {
   const { first, second } = req.body;
-  console.log(req.body);
-  Data.find({ parents: { $all: [first, second] } }, (err, result) => {
+  Data.find({
+    $or: [
+      {
+        parents: {
+          $eq: [
+            first,
+            second
+          ]
+        }
+      },
+      {
+        parents: {
+          $eq: [
+            second,
+            first
+          ]
+        }
+      }
+    ]
+  }, (err, result) => {
     if (err) return res.json({ success: false, error: err });
     return res.json({ success: true, result: result });
+  });
+});
+
+router.post("/getSuggestions", (req, res) => {
+  const { elements } = req.body;
+  Data.find({
+    $expr: {
+      $setIsSubset: [
+        "$parents",
+        elements
+      ]
+   }
+  }, {_id: 0}, (err, result) => {
+    const resultIds = result.map(element => element.id);
+    Suggestions.find({ element: { $in: resultIds } }, (err, suggestions) => {
+      return res.json({ success: true, result: suggestions });
+    });
   });
 });
 

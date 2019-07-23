@@ -1,0 +1,52 @@
+
+* {
+    font-family: 'MedievalSharp', cursive;
+}
+
+h1 {
+    font-family: 'Grand Hotel', cursive;
+    width: 180px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
+}
+
+label {
+    margin-right: 10px;
+}
+
+body {
+    background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIxzasAa63NJyZQ0k0--aNXT4MLMwsiDikgjEXw_ybbX1QgAlE");
+    background-size: cover;
+}
+
+li {
+    margin-top: 5px;
+}
+
+.crafting {
+    margin: 20px 50px;
+    background: #fff;
+    min-height: 300px;
+    width: 500px;
+    float: left;
+}
+
+.progress {
+    text-align: center;
+}
+
+.available-tiles {
+    text-align: center;
+    align-items: center;
+}
+
+.tiles-list {
+    justify-content: center;
+}
+
+.login, .register {
+    padding: 20px;
+}

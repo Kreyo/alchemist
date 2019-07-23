@@ -3,6 +3,7 @@ import axios from 'axios';
 import Game from './components/Game';
 import Login from './components/Login';
 import Register from './components/Register';
+import './components/App.css';
 
 class App extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class App extends Component {
       user: null,
       tiles: [],
       availableTiles: [],
+      suggestions: [],
     }
 
     this.setUser = this.setUser.bind(this);
@@ -28,7 +30,10 @@ class App extends Component {
       })
     } else {
       axios.get('/api/getStarters')
-        .then(result => this.setState({ tiles: result.data.result, availableTiles: result.data.result }));
+        .then(result => {
+          this.setState({ tiles: result.data.result, availableTiles: result.data.result });
+          this.getSuggestions();
+        });
     }
   }
 
@@ -40,6 +45,15 @@ class App extends Component {
     localStorage.setItem('alchemyUser', JSON.stringify(user));
   }
 
+  getSuggestions() {
+    const elementIds = this.state.availableTiles.map(element => element.id);
+    if (elementIds.length) {
+      axios.post('/api/getSuggestions', {elements: elementIds})
+        .then(response => this.setState({ suggestions: response.data.result }));
+    }
+  }
+
+
   setAvailableTiles(availableTiles) {
     this.setState({ availableTiles });
     const { user } = this.state;
@@ -48,19 +62,27 @@ class App extends Component {
       axios.put('/api/update', user);
       localStorage.setItem('alchemyUser', JSON.stringify(user));
     }
+    this.getSuggestions();
   }
 
   render() {
     return (
       <div className="container">
-        { this.state.user ? `Logged in as ${this.state.user.username}` : <Login setUser={this.setUser} />}
+        <h1>Alchemy Game</h1>
+        { this.state.user ?
+          `Logged in as ${this.state.user.username}` : <Login setUser={this.setUser} />}
         { !this.state.user && <Register setUser={this.setUser} availableElements={this.state.availableTiles} />}
         <div style={{ clear: 'both' }}/>
+        <hr />
+        <div className="progress">
+          Discovered {this.state.availableTiles.length} of 18
+        </div>
         <Game
           tiles={this.state.tiles}
           availableTiles={this.state.availableTiles}
           setTiles={tiles => this.setState({ tiles })}
           setAvailableTiles={this.setAvailableTiles}
+          suggestions={this.state.suggestions}
         />
       </div>
     );

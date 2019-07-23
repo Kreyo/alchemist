@@ -10,8 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^4.0.1",
-    "react-dnd": "^7.0.2",
-    "react-dnd-html5-backend": "^7.0.2"
+    "concurrently": "^4.0.1"
   }
 }

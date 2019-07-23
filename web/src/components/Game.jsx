@@ -3,12 +3,13 @@ import axios from 'axios';
 import _ from 'lodash';
 import Tile from './Tile';
 import TilesList from './TilesList';
+import Suggestions from './Suggestions';
 
 class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dragged: null
+      dragged: null,
     };
     this.onDragStart = this.onDragStart.bind(this);
     this.onDragEnd = this.onDragEnd.bind(this);
@@ -52,7 +53,7 @@ class Game extends Component {
     return (
       <div className='container'>
         <div className='available-tiles'>
-          <h2>Available elements</h2>
+          <h2>Available elements (click to add to crafting board)</h2>
           <TilesList
             tiles={this.props.availableTiles}
             onClick={tile => this.props.setTiles([...this.props.tiles, tile])}
@@ -60,8 +61,8 @@ class Game extends Component {
           <hr />
         </div>
         { !this.props.tiles.length && <p>Loading...</p> }
+        <h2>Crafting</h2>
         <div className='crafting'>
-          <h2>Crafting!</h2>
           {this.props.tiles.map((tile, index) =>
             <Tile
               key={`${tile.id}${index}-starters`}
@@ -75,6 +76,7 @@ class Game extends Component {
             />
           )}
         </div>
+        <Suggestions suggestions={this.props.suggestions} />
       </div>
     );
   }

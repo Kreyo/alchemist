@@ -1,5 +1,6 @@
 .tiles-list {
     display: flex;
+    overflow: auto;
 }
 
 .available-tile {
